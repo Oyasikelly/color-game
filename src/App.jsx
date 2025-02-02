@@ -21,7 +21,6 @@ export default function ColorGame() {
       setMessage("You have exausted your trails 😓");
     }
 
-    console.log(!correct);
     // Toggle correct
     // renders only when correct is TRUE. Once correct becomes FALSE is will stop rendering
     if (!correct) {
