@@ -77,7 +77,6 @@ const colorSets = [
 export default function ColorGame() {
   const shuffleArray = (array) => [...array].sort(() => Math.random() - 0.5);
   const [selected, setSelected] = useState("set-1");
-  const trails = 10;
 
   // Filtering out the selected color set
   const filterColor = colorSets.find((colorSet) => selected === colorSet.set);
@@ -100,7 +99,8 @@ export default function ColorGame() {
   const [message, setMessage] = useState("Guess the correct color!");
   const [score, setScore] = useState(0);
   const [correct, setCorrect] = useState(false);
-  const [clickCount, setClickCount] = useState(10);
+  const [clickCount, setClickCount] = useState(4);
+  const trails = 4;
 
   function handTrails(color) {
     if (clickCount < trails && clickCount <= 0) {
@@ -123,6 +123,12 @@ export default function ColorGame() {
     } else {
       setMessage("Wrong! Try again. ❌");
       setCorrect(false);
+    }
+
+    if (clickCount <= 0 && color !== targetColor) {
+      setMessage("You have exausted your trails 😓");
+      setClickCount(0);
+      setCorrect(true);
     }
   };
 
