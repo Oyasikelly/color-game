@@ -39,7 +39,7 @@ export default function ScoreContainer({ colorSets, onClose }) {
 
   return (
     <motion.div
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50"
+      className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-indigo-300 to-purple-500 bg-opacity-50 backdrop-blur-sm z-50"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
