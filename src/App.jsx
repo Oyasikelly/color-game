@@ -205,8 +205,8 @@ export default function ColorGame() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <FaGamepad className="text-yellow-300 text-5xl " /> Color Guessing
-          Game
+          <FaGamepad className="text-yellow-300 text-5xl " />
+          Color Guessing Game
         </motion.h1>
 
         {/* Color Set Dropdown */}
