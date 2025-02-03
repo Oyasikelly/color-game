@@ -128,7 +128,10 @@ export default function ColorGame() {
       setCorrect(false);
     }
 
-    if (clickCount <= 0 && color !== targetColor) {
+    if (
+      (clickCount <= 0 && color !== targetColor) ||
+      (clickCount <= 0 && color == targetColor)
+    ) {
       setMessage("You have exausted your trails 😓");
       setClickCount(0);
       setCorrect(true);
