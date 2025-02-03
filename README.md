@@ -1,8 +1,8 @@
-# 🎨 Color Guessing Game
+# 🎨 Color Game
 
 ## 📌 Overview
 
-The **Color Guessing Game** is a fun and interactive web-based game where players test their ability to guess the correct color from a randomly shuffled set. The game challenges players with multiple color sets, a scoring system, and limited attempts per round.
+The **Color Game** is a fun and interactive web-based game where players test their ability to guess the correct color from a randomly shuffled set. The game challenges players with multiple color sets, a scoring system, and limited attempts per round.
 
 ## 🚀 Features
 
@@ -30,11 +30,11 @@ The **Color Guessing Game** is a fun and interactive web-based game where player
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/color-guessing-game.git
+   git clone https://github.com/your-username/color-game.git
    ```
 2. Navigate to the project folder:
    ```bash
-   cd color-guessing-game
+   cd color-game
    ```
 3. Install dependencies:
    ```bash
