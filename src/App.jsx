@@ -100,6 +100,9 @@ export default function ColorGame() {
   const [score, setScore] = useState(0);
   const [correct, setCorrect] = useState(false);
   const [clickCount, setClickCount] = useState(4);
+  const [highscore, setHighscore] = useState(
+    JSON.parse(localStorage.getItem("highscore")) || 0
+  );
   const trails = 4;
 
   function handTrails(color) {
@@ -142,13 +145,26 @@ export default function ColorGame() {
 
   const handleColorSet = (e) => {
     setSelected(e.target.value);
+    setCorrect(false);
+    setClickCount(trails);
+    setScore(0);
+    setMessage("Guess the correct color!");
     setTargetColor(
       (c) => shuffled[Math.floor(Math.random() * shuffled.length)]
     );
   };
+
+  // save score to localstorage, i other to record high scores
+  useEffect(() => {
+    if (score > highscore) {
+      setHighscore(score);
+      localStorage.setItem("highscore", JSON.stringify(score));
+    }
+  }, [score]);
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-indigo-300 to-purple-500 p-6">
       {/* Game Title */}
+
       <motion.h1
         className="text-3xl font-extrabold text-white mb-6 flex flex-col justify-center lg:flex-row items-center gap-2 text-center"
         initial={{ opacity: 0, y: -20 }}
@@ -157,6 +173,11 @@ export default function ColorGame() {
       >
         <FaGamepad className="text-yellow-300 " /> Color Guessing Game
       </motion.h1>
+
+      {/* Hightscore */}
+      <span className="text-2xl font-extrabold text-white mb-10">
+        HIGHSCORE: {highscore}
+      </span>
 
       {/* Color Set Dropdown */}
       <motion.select
