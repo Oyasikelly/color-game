@@ -1,32 +1,40 @@
 "use client";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { FaRedo, FaTrophy, FaGamepad } from "react-icons/fa";
+import { FaRedo, FaTrophy, FaGamepad, FaMedal } from "react-icons/fa";
 
+// component
+import HighScore from "./component/HighScore";
 const colorSets = [
   {
     set: "set-1",
     range: ["red", "blue", "green", "yellow", "orange", "purple"],
+    highscore: 0,
   },
   {
     set: "set-2",
     range: ["pink", "brown", "cyan", "lime", "indigo", "teal"],
+    highscore: 0,
   },
   {
     set: "set-3",
     range: ["gold", "silver", "maroon", "navy", "olive", "coral"],
+    highscore: 0,
   },
   {
     set: "set-4",
     range: ["skyblue", "violet", "magenta", "beige", "turquoise", "salmon"],
+    highscore: 0,
   },
   {
     set: "set-5",
     range: ["crimson", "chartreuse", "khaki", "plum", "orchid", "lavender"],
+    highscore: 0,
   },
   {
     set: "set-6",
     range: ["azure", "peachpuff", "wheat", "seagreen", "slateblue", "tan"],
+    highscore: 0,
   },
   {
     set: "set-7",
@@ -38,6 +46,7 @@ const colorSets = [
       "darkcyan",
       "steelblue",
     ],
+    highscore: 0,
   },
   {
     set: "set-8",
@@ -49,6 +58,7 @@ const colorSets = [
       "mediumaquamarine",
       "peru",
     ],
+    highscore: 0,
   },
   {
     set: "set-9",
@@ -60,6 +70,7 @@ const colorSets = [
       "mediumvioletred",
       "sienna",
     ],
+    highscore: 0,
   },
   {
     set: "set-10",
@@ -71,6 +82,7 @@ const colorSets = [
       "cadetblue",
       "hotpink",
     ],
+    highscore: 0,
   },
 ];
 
@@ -79,8 +91,11 @@ export default function ColorGame() {
   const [selected, setSelected] = useState("set-1");
 
   // Filtering out the selected color set
-  const filterColor = colorSets.find((colorSet) => selected === colorSet.set);
-  const shuffled = filterColor ? shuffleArray(filterColor.range) : [];
+  const currentSet = colorSets.find((colorSet) => selected === colorSet.set);
+  const filtedSet = currentSet.set;
+
+  console.log(filtedSet);
+  const shuffled = currentSet ? shuffleArray(currentSet.range) : [];
 
   const [targetColor, setTargetColor] = useState(
     shuffled[Math.floor(Math.random() * shuffled.length)] || ""
@@ -93,16 +108,12 @@ export default function ColorGame() {
     }
   }, [selected]); // Runs when "selected" changes
 
-  console.log(shuffled);
-  console.log(targetColor);
-
+  const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("Guess the correct color!");
   const [score, setScore] = useState(0);
   const [correct, setCorrect] = useState(false);
   const [clickCount, setClickCount] = useState(4);
-  const [highscore, setHighscore] = useState(
-    JSON.parse(localStorage.getItem("highscore")) || 0
-  );
+
   const trails = 4;
 
   function handTrails(color) {
@@ -143,7 +154,6 @@ export default function ColorGame() {
     setCorrect(false);
     setTargetColor(shuffled[Math.floor(Math.random() * shuffled.length)]);
     setMessage("Guess the correct color!");
-    console.log(targetColor);
   };
 
   const handleColorSet = (e) => {
@@ -157,103 +167,133 @@ export default function ColorGame() {
     );
   };
 
-  // save score to localstorage, i other to record high scores
+  // Save to localstorage
   useEffect(() => {
-    if (score > highscore) {
-      setHighscore(score);
-      localStorage.setItem("highscore", JSON.stringify(score));
+    if (score > 0) {
+      const storedColorSets =
+        JSON.parse(localStorage.getItem("colorSets")) || colorSets;
+      const updatedColorSets = storedColorSets.map((colorSet) => {
+        if (colorSet.set === selected) {
+          return {
+            ...colorSet,
+            highscore: Math.max(colorSet.highscore, score), // Update only if the new score is higher
+          };
+        }
+        return colorSet;
+      });
+
+      localStorage.setItem("colorSets", JSON.stringify(updatedColorSets));
     }
-  }, [score]);
+  }, [score, selected]);
+
+  function toggleHighScore() {
+    setOpen(!open);
+  }
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-indigo-300 to-purple-500 p-6">
-      {/* Game Title */}
+    <>
+      {open && (
+        <HighScore
+          score={score}
+          selected={selected}
+          colorSets={colorSets}
+          onClose={toggleHighScore}
+        />
+      )}
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-indigo-300 to-purple-500 p-6">
+        {/* Game Title */}
 
-      <motion.h1
-        className="text-3xl font-extrabold text-white mb-6 flex flex-col justify-center lg:flex-row items-center gap-2 text-center"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <FaGamepad className="text-yellow-300 " /> Color Guessing Game
-      </motion.h1>
-
-      {/* Hightscore */}
-      <span className="text-2xl font-extrabold text-white mb-10">
-        HIGHSCORE: {highscore}
-      </span>
-
-      {/* Color Set Dropdown */}
-      <motion.select
-        value={selected}
-        onChange={handleColorSet}
-        className="p-3 rounded-lg bg-white shadow-md mb-6 cursor-pointer"
-        whileHover={{ scale: 1.05 }}
-      >
-        {colorSets.map((colorSet, index) => (
-          <option key={index} value={colorSet.set}>
-            {colorSet.set}
-          </option>
-        ))}
-      </motion.select>
-
-      {/* Game Instructions / Status */}
-      <motion.h1
-        className={`text-xl font-semibold text-white mb-4`}
-        data-testid={correct ? "gameInstructions" : "gameStatus"}
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-      >
-        {message}
-      </motion.h1>
-
-      {/* Target Color Box */}
-      <motion.div
-        className="w-28 h-28 rounded-lg shadow-lg mb-6 border-4 border-white"
-        style={{ backgroundColor: correct ? targetColor : "transparent" }}
-        data-testid="colorBox"
-        animate={{ rotate: [0, 10, -10, 0] }}
-        transition={{ duration: 0.5 }}
-      />
-
-      {/* Color Options Grid */}
-      <div className="grid grid-cols-3 gap-4">
-        {shuffled.map((color) => (
-          <motion.button
-            key={color}
-            className="w-16 h-16 rounded-lg shadow-md border border-white cursor-pointer"
-            style={{ backgroundColor: color }}
-            data-testid="colorOption"
-            onClick={() => handTrails(color)}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          />
-        ))}
-      </div>
-
-      {/* Score & Attempts */}
-      <div className="flex items-center gap-6 mt-6 text-white text-lg">
-        <motion.p
-          className="flex items-center gap-2"
-          data-testid="score"
-          animate={correct ? { scale: [1, 1.2, 1] } : {}}
+        <motion.h1
+          className="text-3xl font-extrabold text-white mb-6 flex flex-col justify-center lg:flex-row items-center gap-2 text-center"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
         >
-          <FaTrophy className="text-yellow-300" /> Score: {score}
-        </motion.p>
-        <p className="text-white" data-testid="score">
-          Trials: {clickCount}
-        </p>
-      </div>
+          <FaGamepad className="text-yellow-300 " /> Color Guessing Game
+        </motion.h1>
 
-      {/* New Game Button */}
-      <motion.button
-        className="mt-6 px-6 py-3 flex items-center gap-2 bg-blue-600 text-white cursor-pointer rounded-lg hover:bg-blue-800 transition shadow-lg"
-        data-testid="newGameButton"
-        onClick={resetGame}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.9 }}
-      >
-        <FaRedo /> New Game
-      </motion.button>
-    </div>
+        {/* Color Set Dropdown */}
+        <motion.select
+          value={selected}
+          onChange={handleColorSet}
+          className="p-3 rounded-lg bg-white shadow-md mb-6 cursor-pointer"
+          whileHover={{ scale: 1.05 }}
+        >
+          {colorSets.map((colorSet, index) => (
+            <option key={index} value={colorSet.set}>
+              {colorSet.set}
+            </option>
+          ))}
+        </motion.select>
+
+        {/* Hightscore */}
+        <motion.button
+          onClick={toggleHighScore}
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-bold text-lg rounded-full shadow-lg hover:scale-105 transition-transform duration-300"
+          whileTap={{ scale: 0.9 }}
+        >
+          <FaMedal className="text-white text-xl" />
+          {/* HIGHSCORE: {highscore} */}
+        </motion.button>
+
+        {/* Game Instructions / Status */}
+        <motion.h1
+          className={`text-xl font-semibold text-white mb-4`}
+          data-testid={correct ? "gameInstructions" : "gameStatus"}
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+        >
+          {message}
+        </motion.h1>
+
+        {/* Target Color Box */}
+        <motion.div
+          className="w-28 h-28 rounded-lg shadow-lg mb-6 border-4 border-white"
+          style={{ backgroundColor: correct ? targetColor : "transparent" }}
+          data-testid="colorBox"
+          animate={{ rotate: [0, 10, -10, 0] }}
+          transition={{ duration: 0.5 }}
+        />
+
+        {/* Color Options Grid */}
+        <div className="grid grid-cols-3 gap-4">
+          {shuffled.map((color) => (
+            <motion.button
+              key={color}
+              className="w-16 h-16 rounded-lg shadow-md border border-white cursor-pointer"
+              style={{ backgroundColor: color }}
+              data-testid="colorOption"
+              onClick={() => handTrails(color)}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            />
+          ))}
+        </div>
+
+        {/* Score & Attempts */}
+        <div className="flex items-center gap-6 mt-6 text-white text-lg">
+          <motion.p
+            className="flex items-center gap-2"
+            data-testid="score"
+            animate={correct ? { scale: [1, 1.2, 1] } : {}}
+          >
+            <FaTrophy className="text-yellow-300" /> Score: {score}
+          </motion.p>
+          <p className="text-white" data-testid="score">
+            Trials: {clickCount}
+          </p>
+        </div>
+
+        {/* New Game Button */}
+        <motion.button
+          className="mt-6 px-6 py-3 flex items-center gap-2 bg-blue-600 text-white cursor-pointer rounded-lg hover:bg-blue-800 transition shadow-lg"
+          data-testid="newGameButton"
+          onClick={resetGame}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <FaRedo /> New Game
+        </motion.button>
+      </div>
+    </>
   );
 }
