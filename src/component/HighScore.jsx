@@ -36,9 +36,7 @@ export default function ScoreContainer({ colorSets, onClose }) {
             </motion.div>
           ))}
         </div>
-        <p className="py-4 text-center text-gray-600">
-          Press ESC or click below to close
-        </p>
+        <p className="py-4 text-center text-gray-600">Click below to close</p>
         <button
           onClick={onClose}
           className="w-full py-2 bg-red-500 text-white rounded-lg hover:bg-red-700 transition"

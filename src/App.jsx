@@ -205,7 +205,8 @@ export default function ColorGame() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <FaGamepad className="text-yellow-300 " /> Color Guessing Game
+          <FaGamepad className="text-yellow-300 text-5xl " /> Color Guessing
+          Game
         </motion.h1>
 
         {/* Color Set Dropdown */}
@@ -225,10 +226,11 @@ export default function ColorGame() {
         {/* Hightscore */}
         <motion.button
           onClick={toggleHighScore}
-          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-bold text-lg rounded-full shadow-lg hover:scale-105 transition-transform duration-300"
+          className="flex items-center cursor-pointer gap-2 px-4 py-2 mb-4 bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-bold text-lg rounded-full shadow-lg hover:scale-105 transition-transform duration-300"
           whileTap={{ scale: 0.9 }}
         >
-          <FaMedal className="text-white text-xl" />
+          <span>click here to view highscore</span>
+          <FaMedal className="text-white text-2xl" />
           {/* HIGHSCORE: {highscore} */}
         </motion.button>
 
