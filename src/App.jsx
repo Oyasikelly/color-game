@@ -92,9 +92,6 @@ export default function ColorGame() {
 
   // Filtering out the selected color set
   const currentSet = colorSets.find((colorSet) => selected === colorSet.set);
-  const filtedSet = currentSet.set;
-
-  console.log(filtedSet);
   const shuffled = currentSet ? shuffleArray(currentSet.range) : [];
 
   const [targetColor, setTargetColor] = useState(

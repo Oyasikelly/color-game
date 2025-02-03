@@ -15,7 +15,7 @@ export default function ScoreContainer({ colorSets, onClose }) {
       exit={{ opacity: 0 }}
     >
       <motion.div
-        className="bg-white shadow-lg rounded-xl p-6 w-full max-w-md md:max-w-lg"
+        className="bg-white shadow-lg rounded-xl p-6 w-[80%] lg:w-full max-w-md md:max-w-lg"
         initial={{ scale: 0.8 }}
         animate={{ scale: 1 }}
         exit={{ scale: 0.8 }}
