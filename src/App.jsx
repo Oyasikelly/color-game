@@ -148,6 +148,7 @@ export default function ColorGame() {
 
   const resetGame = () => {
     setClickCount(trails);
+    setScore(0);
     setCorrect(false);
     setTargetColor(shuffled[Math.floor(Math.random() * shuffled.length)]);
     setMessage("Guess the correct color!");
