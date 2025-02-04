@@ -120,7 +120,7 @@ export default function ColorGame() {
   //STATES
   const [selected, setSelected] = useState("set-1");
   const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("Guess the correct color!");
+  const [message, setMessage] = useState("");
   const [score, setScore] = useState(0);
   const [correct, setCorrect] = useState(false);
 
@@ -146,12 +146,13 @@ export default function ColorGame() {
 
   //reset the game
   const resetGame = () => {
-    const randomNumber = Math.floor(Math.random() * 10) + 1;
-    setSelected(`set-${randomNumber}`);
+    const randomSet = colorSets[Math.floor(Math.random() * colorSets.length)];
+    setSelected(randomSet.set);
     setScore(0);
     setCorrect(false);
-    setTargetColor(shuffled[Math.floor(Math.random() * shuffled.length)]);
-    setMessage("Guess the correct color!");
+
+    const shuffledNew = shuffleArray(randomSet.range);
+    setTargetColor(shuffledNew[Math.floor(Math.random() * shuffledNew.length)]);
   };
 
   //Handle the selected option e.g, set-1,set-2,set-3...
@@ -159,15 +160,14 @@ export default function ColorGame() {
     setSelected(e.target.value);
     setCorrect(false);
     setScore(0);
-    setMessage("Guess the correct color!");
   };
 
   // Update targetColor whenever "selected" and "handleGuess" changes
   useEffect(() => {
-    if (shuffled.length > 0) {
-      setTargetColor(shuffled[Math.floor(Math.random() * shuffled.length)]);
-    }
-  }, [selected, handleGuess]); // Runs when "selected" changes
+    const currentSet = colorSets.find((colorSet) => selected === colorSet.set);
+    const shuffledNew = shuffleArray(currentSet.range);
+    setTargetColor(shuffledNew[Math.floor(Math.random() * shuffledNew.length)]);
+  }, [selected, score]); // Runs when "selected" or "score" changes
 
   // Save to localstorage
   useEffect(() => {
@@ -242,7 +242,15 @@ export default function ColorGame() {
         {/* Game Instructions / Status */}
         <motion.h1
           className={`text-xl font-semibold text-white mb-4`}
-          data-testid={correct ? "gameInstructions" : "gameStatus"}
+          data-testid="gameInstructions"
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+        >
+          Guess the correct color!
+        </motion.h1>
+        <motion.h1
+          className={`text-xl font-semibold text-white mb-4`}
+          data-testid="gameStatus"
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
         >
@@ -260,23 +268,24 @@ export default function ColorGame() {
         </div>
 
         {/* Color Options Grid */}
-        <div className="grid grid-cols-3 gap-4" data-testid="colorOption">
+        <div className="grid grid-cols-3 gap-4">
           {shuffled.map((color, index) => (
-            <motion.button
-              key={color}
-              className="w-16 h-16 rounded-lg shadow-md border border-white cursor-pointer"
-              style={{ backgroundColor: color }}
-              onClick={() => handleGuess(color, index)}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            />
+            <div data-testid="colorOption" key={color}>
+              <motion.button
+                className="w-16 h-16 rounded-lg shadow-md border border-white cursor-pointer"
+                style={{ backgroundColor: color }}
+                onClick={() => handleGuess(color, index)}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              />
+            </div>
           ))}
         </div>
 
         {/* Score & Attempts */}
         <div
-          className="flex items-center gap-6 mt-6 text-white text-lg"
           data-testid="score"
+          className="flex items-center gap-6 mt-6 text-white text-lg"
         >
           <motion.p
             className="flex items-center gap-2"
