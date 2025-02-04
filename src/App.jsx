@@ -105,12 +105,17 @@ export default function ColorGame() {
     }
   }, [selected]); // Runs when "selected" changes
 
+  //Getting a random index
+  const randomIndex = Math.floor(Math.random() * shuffled.length);
+
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("Guess the correct color!");
   const [score, setScore] = useState(0);
   const [correct, setCorrect] = useState(false);
   const [clickCount, setClickCount] = useState(4);
-
+  const [colorClicked, setColorClicked] = useState(
+    (c) => shuffled[randomIndex]
+  );
   const trails = 4;
 
   function handTrails(color) {
@@ -147,6 +152,7 @@ export default function ColorGame() {
   };
 
   const resetGame = () => {
+    setColorClicked(shuffled[randomIndex]);
     setClickCount(trails);
     setScore(0);
     setCorrect(false);
@@ -183,6 +189,11 @@ export default function ColorGame() {
       localStorage.setItem("colorSets", JSON.stringify(updatedColorSets));
     }
   }, [score, selected]);
+
+  //sets the target color  when handleColorSet changes
+  useEffect(() => {
+    setColorClicked(shuffled[randomIndex]);
+  }, [handleColorSet]);
 
   function toggleHighScore() {
     setOpen(!open);
@@ -248,7 +259,7 @@ export default function ColorGame() {
         {/* Target Color Box */}
         <motion.div
           className="w-28 h-28 rounded-lg shadow-lg mb-6 border-4 border-white"
-          style={{ backgroundColor: correct ? targetColor : "transparent" }}
+          style={{ backgroundColor: correct ? targetColor : colorClicked }}
           data-testid="colorBox"
           animate={{ rotate: [0, 10, -10, 0] }}
           transition={{ duration: 0.5 }}
