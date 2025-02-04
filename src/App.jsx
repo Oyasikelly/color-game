@@ -8,79 +8,107 @@ import HighScore from "./component/HighScore";
 const colorSets = [
   {
     set: "set-1",
-    range: ["red", "blue", "green", "yellow", "orange", "purple"],
+    range: ["red", "darkred", "lightcoral", "salmon", "firebrick", "indianred"],
     highscore: 0,
   },
   {
     set: "set-2",
-    range: ["pink", "brown", "cyan", "lime", "indigo", "teal"],
+    range: [
+      "blue",
+      "royalblue",
+      "dodgerblue",
+      "deepskyblue",
+      "cornflowerblue",
+      "steelblue",
+    ],
     highscore: 0,
   },
   {
     set: "set-3",
-    range: ["gold", "silver", "maroon", "navy", "olive", "coral"],
+    range: [
+      "green",
+      "darkgreen",
+      "seagreen",
+      "forestgreen",
+      "mediumseagreen",
+      "limegreen",
+    ],
     highscore: 0,
   },
   {
     set: "set-4",
-    range: ["skyblue", "violet", "magenta", "beige", "turquoise", "salmon"],
+    range: [
+      "yellow",
+      "gold",
+      "khaki",
+      "lightgoldenrodyellow",
+      "palegoldenrod",
+      "darkkhaki",
+    ],
     highscore: 0,
   },
   {
     set: "set-5",
-    range: ["crimson", "chartreuse", "khaki", "plum", "orchid", "lavender"],
+    range: [
+      "purple",
+      "mediumpurple",
+      "blueviolet",
+      "darkorchid",
+      "plum",
+      "orchid",
+    ],
     highscore: 0,
   },
   {
     set: "set-6",
-    range: ["azure", "peachpuff", "wheat", "seagreen", "slateblue", "tan"],
+    range: [
+      "orange",
+      "darkorange",
+      "tomato",
+      "coral",
+      "sandybrown",
+      "chocolate",
+    ],
     highscore: 0,
   },
   {
     set: "set-7",
     range: [
-      "tomato",
-      "honeydew",
-      "mistyrose",
-      "powderblue",
+      "teal",
       "darkcyan",
-      "steelblue",
+      "lightseagreen",
+      "mediumaquamarine",
+      "cadetblue",
+      "aquamarine",
     ],
     highscore: 0,
   },
   {
     set: "set-8",
     range: [
-      "firebrick",
+      "pink",
+      "lightpink",
+      "hotpink",
+      "palevioletred",
       "rosybrown",
-      "dodgerblue",
-      "lightcoral",
-      "mediumaquamarine",
-      "peru",
+      "mistyrose",
     ],
     highscore: 0,
   },
   {
     set: "set-9",
-    range: [
-      "mediumseagreen",
-      "darkslategray",
-      "darkorchid",
-      "greenyellow",
-      "mediumvioletred",
-      "sienna",
-    ],
+    range: ["brown", "saddlebrown", "sienna", "peru", "tan", "burlywood"],
     highscore: 0,
   },
   {
     set: "set-10",
     range: [
-      "lightseagreen",
-      "forestgreen",
-      "darkmagenta",
-      "darkgoldenrod",
-      "cadetblue",
-      "hotpink",
+      "gray",
+      "darkslategray",
+      "dimgray",
+      "slategray",
+      "lightslategray",
+      "gainsboro",
     ],
     highscore: 0,
   },
@@ -88,7 +116,13 @@ const colorSets = [
 
 export default function ColorGame() {
   const shuffleArray = (array) => [...array].sort(() => Math.random() - 0.5);
+
+  //STATES
   const [selected, setSelected] = useState("set-1");
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState("Guess the correct color!");
+  const [score, setScore] = useState(0);
+  const [correct, setCorrect] = useState(false);
 
   // Filtering out the selected color set
   const currentSet = colorSets.find((colorSet) => selected === colorSet.set);
@@ -98,40 +132,8 @@ export default function ColorGame() {
     shuffled[Math.floor(Math.random() * shuffled.length)] || ""
   );
 
-  // Update targetColor whenever "selected" changes
-  useEffect(() => {
-    if (shuffled.length > 0) {
-      setTargetColor(shuffled[Math.floor(Math.random() * shuffled.length)]);
-    }
-  }, [selected]); // Runs when "selected" changes
-
-  //Getting a random index
-  const randomIndex = Math.floor(Math.random() * shuffled.length);
-
-  const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("Guess the correct color!");
-  const [score, setScore] = useState(0);
-  const [correct, setCorrect] = useState(false);
-  const [clickCount, setClickCount] = useState(4);
-  const [colorClicked, setColorClicked] = useState(
-    (c) => shuffled[randomIndex]
-  );
-  const trails = 4;
-
-  function handTrails(color) {
-    if (clickCount < trails && clickCount <= 0) {
-      setClickCount(0);
-      setMessage("You have exausted your trails 😓");
-    }
-
-    // Toggle correct
-    // renders only when correct is TRUE. Once correct becomes FALSE is will stop rendering
-    if (!correct) {
-      setClickCount(clickCount - 1);
-      handleGuess(color);
-    }
-  }
-  const handleGuess = (color) => {
+  // Handle the guested colors
+  const handleGuess = (color, index) => {
     if (color === targetColor) {
       setMessage("Correct! 🎉");
       setScore(score + 1);
@@ -140,36 +142,32 @@ export default function ColorGame() {
       setMessage("Wrong! Try again. ❌");
       setCorrect(false);
     }
-
-    if (
-      (clickCount <= 0 && color !== targetColor) ||
-      (clickCount <= 0 && color == targetColor)
-    ) {
-      setMessage("You have exausted your trails 😓");
-      setClickCount(0);
-      setCorrect(true);
-    }
   };
 
+  //reset the game
   const resetGame = () => {
-    setColorClicked(shuffled[randomIndex]);
-    setClickCount(trails);
+    const randomNumber = Math.floor(Math.random() * 10) + 1;
+    setSelected(`set-${randomNumber}`);
     setScore(0);
     setCorrect(false);
     setTargetColor(shuffled[Math.floor(Math.random() * shuffled.length)]);
     setMessage("Guess the correct color!");
   };
 
+  //Handle the selected option e.g, set-1,set-2,set-3...
   const handleColorSet = (e) => {
     setSelected(e.target.value);
     setCorrect(false);
-    setClickCount(trails);
     setScore(0);
     setMessage("Guess the correct color!");
-    setTargetColor(
-      (c) => shuffled[Math.floor(Math.random() * shuffled.length)]
-    );
   };
+
+  // Update targetColor whenever "selected" and "handleGuess" changes
+  useEffect(() => {
+    if (shuffled.length > 0) {
+      setTargetColor(shuffled[Math.floor(Math.random() * shuffled.length)]);
+    }
+  }, [selected, handleGuess]); // Runs when "selected" changes
 
   // Save to localstorage
   useEffect(() => {
@@ -190,16 +188,11 @@ export default function ColorGame() {
     }
   }, [score, selected]);
 
-  //sets the target color  when handleColorSet changes
-  useEffect(() => {
-    setColorClicked(shuffled[randomIndex]);
-  }, [handleColorSet]);
-
   function toggleHighScore() {
     setOpen(!open);
   }
   return (
-    <>
+    <div>
       {open && (
         <HighScore
           score={score}
@@ -257,23 +250,23 @@ export default function ColorGame() {
         </motion.h1>
 
         {/* Target Color Box */}
-        <motion.div
-          className="w-28 h-28 rounded-lg shadow-lg mb-6 border-4 border-white"
-          style={{ backgroundColor: correct ? targetColor : colorClicked }}
-          data-testid="colorBox"
-          animate={{ rotate: [0, 10, -10, 0] }}
-          transition={{ duration: 0.5 }}
-        />
+        <div data-testid="colorBox">
+          <motion.div
+            className="w-28 h-28 rounded-lg shadow-lg mb-6 border-4 border-white"
+            style={{ backgroundColor: targetColor }}
+            animate={{ rotate: [0, 20, -20, 0] }}
+            transition={{ duration: 0.8 }}
+          />
+        </div>
 
         {/* Color Options Grid */}
-        <div className="grid grid-cols-3 gap-4">
-          {shuffled.map((color) => (
+        <div className="grid grid-cols-3 gap-4" data-testid="colorOption">
+          {shuffled.map((color, index) => (
             <motion.button
               key={color}
               className="w-16 h-16 rounded-lg shadow-md border border-white cursor-pointer"
               style={{ backgroundColor: color }}
-              data-testid="colorOption"
-              onClick={() => handTrails(color)}
+              onClick={() => handleGuess(color, index)}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
             />
@@ -281,30 +274,30 @@ export default function ColorGame() {
         </div>
 
         {/* Score & Attempts */}
-        <div className="flex items-center gap-6 mt-6 text-white text-lg">
+        <div
+          className="flex items-center gap-6 mt-6 text-white text-lg"
+          data-testid="score"
+        >
           <motion.p
             className="flex items-center gap-2"
-            data-testid="score"
             animate={correct ? { scale: [1, 1.2, 1] } : {}}
           >
             <FaTrophy className="text-yellow-300" /> Score: {score}
           </motion.p>
-          <p className="text-white" data-testid="score">
-            Trials: {clickCount}
-          </p>
         </div>
 
         {/* New Game Button */}
-        <motion.button
-          className="mt-6 px-6 py-3 flex items-center gap-2 bg-blue-600 text-white cursor-pointer rounded-lg hover:bg-blue-800 transition shadow-lg"
-          data-testid="newGameButton"
-          onClick={resetGame}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <FaRedo /> New Game
-        </motion.button>
+        <div data-testid="newGameButton">
+          <motion.button
+            className="mt-6 px-6 py-3 flex items-center gap-2 bg-blue-600 text-white cursor-pointer rounded-lg hover:bg-blue-800 transition shadow-lg"
+            onClick={resetGame}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <FaRedo /> New Game
+          </motion.button>
+        </div>
       </div>
-    </>
+    </div>
   );
 }
